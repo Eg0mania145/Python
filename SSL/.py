@@ -4,8 +4,6 @@ import time
 import pickle
 os.system('cls' if os.name == 'nt' else 'clear')
 
-
-
 userName = input("Enter your name: ").lower()
 userFile = f"{userName}.dat"
 
