@@ -1,0 +1,15 @@
+name = input("vad heter du? ")
+
+print ("Hej på dig " + name)
+age = int(input("Hur gammal är du " + name +"? "))
+
+if  age == [11, 12 ,13 ,14 ,15 ,16 ,17 ,18 ,19 ,20] :
+    print ("då måste du lära dig programera")
+if age > 19 and age < 39 :
+    print ("du är en fosil")
+if age > 39 and age < 100 :
+    print ("unc rulla till ålderdomshemmet med din rullator")
+if age < 11 :
+   print ("hur kan du skriva du är nästan en bebis ")
+if age > 99 :
+    print ("hur är du inte död? ")
