@@ -12,8 +12,7 @@ while play == True:
     text = input("Skriv in en textsträng med små bokstäver : ").strip().lower()
     bokstav = input("Vilken bokstav vill du ta bort? : ").strip().lower()
 
-    time.sleep(1)
-    os.system('cls')
+    time.sleep(0.7)
 
 
     if len(bokstav) != 1:
@@ -30,11 +29,11 @@ while play == True:
     print("\nResultatet blir : ")
     print(nytext)
     if input("vill du köra igen (y/n) : ").lower() == ("n") :
-        time.sleep(1)
+        time.sleep(0.7)
         os.system('cls')
         break
 
     else:
-        time.sleep(1)
+        time.sleep(0.7)
         os.system('cls')
         pass
