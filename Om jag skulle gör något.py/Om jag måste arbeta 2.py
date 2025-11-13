@@ -9,8 +9,8 @@ play = True
 again = None
 
 while play == True:
-    text = input("Skriv in en textsträng : ").strip()
-    bokstav = input("Vilken bokstav vill du ta bort? : ").strip()
+    text = input("Skriv in en textsträng med små bokstäver : ").strip().lower()
+    bokstav = input("Vilken bokstav vill du ta bort? : ").strip().lower()
 
     time.sleep(1)
     os.system('cls')
