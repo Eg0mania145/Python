@@ -29,11 +29,12 @@ while play == True:
 
     print("\nResultatet blir : ")
     print(nytext)
-    if input("vill du köra igen : ").lower() == ("n") :
+    if input("vill du köra igen (y/n) : ").lower() == ("n") :
+        time.sleep(1)
+        os.system('cls')
         break
+
     else:
+        time.sleep(1)
+        os.system('cls')
         pass
-
-
-    time.sleep(1)
-    os.system('cls')
