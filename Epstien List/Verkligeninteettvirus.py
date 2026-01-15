@@ -6,6 +6,7 @@ os.system('cls')
 play = True
 
 print("Vi kommer ställa dig några ja eller nej frågor")
+time.sleep(0.7)
 print("skriv y för ja och n för nej")
 time.sleep(0.7)
 while play:
