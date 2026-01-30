@@ -1,6 +1,9 @@
 import math
 import time
 
+A = []
+B = []
+
 def distance(A,B):
     dx = A[0]-B[0]
     dy = A[1]-B[1]
@@ -8,8 +11,6 @@ def distance(A,B):
     d = math.sqrt(dx**2+dy**2+dz**2)
     return d
 
-A = []
-B = []
 play = True
 
 while play:
