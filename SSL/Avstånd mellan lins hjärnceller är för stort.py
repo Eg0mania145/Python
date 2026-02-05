@@ -14,18 +14,11 @@ def distance(A,B):
 play = True
 
 while play:
-    Apunkt1 = int(input("mata in X punkten i A : "))
-    A.append(Apunkt1)
-    Apunkt2 = int(input("\nmata in Y punkten i A : "))
-    A.append(Apunkt2)
-    Apunkt3 = int(input("\nmata in Z punkten i A : "))
-    A.append(Apunkt3)
-    Bpunkt1 = int(input("\n\nmata in X punkten i B : "))
-    B.append(Bpunkt1)
-    Bpunkt2 = int(input("m\nata in Y punkten i B : "))
-    B.append(Bpunkt2)
-    Bpunkt3 = int(input("\nmata in Z punkten i B : "))
-    B.append(Bpunkt3)
+    xyzförA = input("Mata in X, Y och Z punkten för A med mellanslag mellan varje punkt : ") 
+    A = list(map(int,xyzförA.split()))
+    
+    xyzförB = input("Mata in X, Y och Z punkten för B med mellanslag mellan varje punkt : ") 
+    B = list(map(int,xyzförB.split()))
 
     svar = distance(A,B)
     print (f"\nAnvståndet mellan {A} och {B} är : {svar:.2f}")
