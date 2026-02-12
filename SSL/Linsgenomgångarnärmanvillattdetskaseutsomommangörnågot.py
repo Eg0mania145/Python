@@ -1,5 +1,19 @@
-num1 = float(input("Skriv in första numret : "))
-num2 = float(input("Skriv in andra numret : "))
-num3 = ((num1+num2)//2)
+x = 0
 
-print(f"resultat\n medelvärdet blir : {num3}")
+print("om du vill stoppa skriv stopp")
+namn = []
+play = True
+while play == True:
+    x = x+1
+    A =input(f"skriv in namn {x} : ").lower()
+    namn.append(A)
+    if A == "stopp":
+        namn.remove("stopp")
+        namn.sort(key = len)
+        print (namn)
+        break
+
+
+
+
+
