@@ -12,8 +12,3 @@ while play == True:
         namn.sort(key = len)
         print (namn)
         break
-
-
-
-
-
