@@ -25,7 +25,7 @@ def generateInsult() -> str:
     lastInsult = insult
     return insult
 
-print("skynet har tagit över världen och ändrat lösenordet för att stänga av den till ett tal mellan 1 och 100")
+print("jag tänker på ett tal mellan 1 och 100 gissa vad det är")
 
 while (play):
     timesNoWin = timesNoWin + 1
