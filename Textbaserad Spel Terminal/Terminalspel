@@ -1,0 +1,258 @@
+import os
+import time
+from listOfSlurs import worst_slurs
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+def pause(t=1.3):
+    time.sleep(t)
+
+def ask_int(prompt, valid=None):
+    while True:
+        val = input(prompt).strip()
+        if not val.isdigit():
+            print("Skriv en siffra.")
+            continue
+        val = int(val)
+        if valid and val not in valid:
+            print(f"Ogiltigt val. Välj: {', '.join(map(str, valid))}")
+            continue
+        return val
+
+def ask_nonempty(prompt):
+    while True:
+        val = input(prompt).strip()
+        if val:
+            return val
+        print("Skriv något, det kan inte vara tomt.")
+
+def choose_name():
+    print("You walk in to a small town, directly after the gate a longbearded old man dressed in long robes\n")
+    print("Hey there!")
+    name = ask_nonempty("What is your name fellow traveler?\n : ")
+    if name in worst_slurs:
+        import os
+        print("get forked nerd")
+        #while True:
+           #os.fork() #fungerar men tar lång tid att starta datorn igen efter koden har körts
+    print(f"Sick name {name}. *The old man daps you up*")
+    return name
+
+def choose_item(inventory):
+    print("The Old man offers you one item for free :")
+    print("1)Gun \n2)Frying pan \n3)Baby knife \n4)Sword \n5)\"Healing\" powder")
+    val = ask_int(": ", valid={1,2,3,4,5})
+    items = {1:"gun", 2:"frying pan", 3:"baby knife", 4:"sword", 5:"healing powder"}
+    item = items[val]
+    inventory[item] = inventory.get(item, 0) + 1
+    if item == "gun":
+        inventory["ammo"] = inventory.get("ammo", 0) + 0
+    print(f"You have chosen {item}")
+    pause()
+
+def store(inventory, money):
+    clear()
+    print("You continue to walk through the town, on your way, you spot a store selling goods for travelers.\n *you think 'perfect just what i need!'*")
+    print("You enter the store, and the shopkeeper greets you...")
+    pause()
+    print("Welcome to my store, what can i do for you?")
+    val = ask_int("1)Show me your goods \n2)Nothing, just looking around\n: ", valid={1,2})
+    if val == 2:
+        print("You decide to just look around, the shopkeeper looks at you with a disappointed look")
+        print("Shopkeeper: 'If you need anything, just let me know'")
+        pause()
+        return money
+    print("The shopkeeper shows you his goods, he has a variety of items that can help you on your journey")
+    print("1)\"Healing\" powder - 50 coins \n2)Sword - 100 coins \n3)gun - 100 \n4)Ammo for gun - 25 coins \n5)Nothing")
+    val = ask_int("Which item do you want to buy? ", valid={1,2,3,4,5})
+    items = {1:"healing powder", 2:"sword", 3:"gun", 4:"ammo", 5:"nothing"}
+    costs = {"healing powder":50, "sword":100, "gun":100, "ammo":25, "nothing":0}
+    item = items[val]
+    cost = costs[item]
+    if item == "nothing":
+        print("you decide not to buy anything, the shopkeeper yells at you for wasting his time")
+        money -= 20
+        print(f"you now have {money} generic currency")
+        pause()
+        return money
+    if money < cost:
+        print("You don't have enough money.")
+        pause()
+        return money
+    money -= cost
+    if item == "ammo":
+        inventory["ammo"] = inventory.get("ammo", 0) + 3
+        print("You have bought ammo for your gun")
+    else:
+        inventory[item] = inventory.get(item, 0) + 1
+        print(f"You have bought a {item}")
+    print(f"you now have {money} generic currency")
+    time.sleep(2)
+    return money
+
+def attack_methhead(inventory):
+    weapon_priority = ["gun", "sword", "frying pan", "baby knife"]
+    for w in weapon_priority:
+        if inventory.get(w, 0) > 0:
+            weapon = w
+            break
+    else:
+        print("You have no weapon to attack with!")
+        return False
+    if weapon == "gun":
+        if inventory.get("ammo", 0) > 0:
+            print("you shoot the methhead in his head, he dies instantly")
+            inventory["ammo"] -= 1
+            return True
+        else:
+            print("You have no ammo left!")
+            return False
+    elif weapon == "sword":
+        print("you attack the methhead with your sword, you chop his head off, he dies instantly")
+        return True
+    elif weapon == "frying pan":
+        print("you attack the methhead with your frying pan, you hit him in the head, his skull caves in and he dies instantly")
+        return True
+    elif weapon == "baby knife":
+        print("you attack the methhead with your baby knife, you stab him in the throat, he chokes on his own blood and sags to the ground.")
+        return True
+    return False
+def attack_officer_of_the_law(inventory):
+    weapon_priority = ["gun", "sword", "frying pan", "baby knife"]
+    for w in weapon_priority:
+        if inventory.get(w, 0) > 0:
+            weapon = w
+            break
+    else:        print("You have no weapon to attack with!")
+    return False
+    if weapon == "gun":
+        if inventory.get("ammo", 0) > 0:
+            print("you shoot the officer of the law in his head, he dies instantly")
+            inventory["ammo"] -= 1
+            return True
+        else:
+            print("You have no ammo left!")
+            return False
+    elif weapon == "sword":
+        print("you attack the officer of the law with your sword, you chop his left arm off, he takes 20 damage but is still alive, he looks at you with rage in his eyes and attacks you back, you take 20 damage")
+        player_health -= 20
+
+        return True
+    elif weapon == "frying pan":
+        print("you attack the officer of the law with your frying pan, you hit him in the head, his skull caves in and he dies instantly")
+        return True
+    elif weapon == "baby knife":
+        print("you attack the officer of the law with your baby knife, you stab him in the throat, he chokes on his own blood and sags to the ground.")
+        return True
+    return False
+    print("")
+def officer_of_the_law_encounter(inventory, player_health, money):
+    clear()
+    print("you walk past a small hut with a sign that says police.")
+    print("An officer of the law jumps out of the hut and screams: !show me your hands!")
+    print("1)Attack\n 2)Comply\n 3)Bribe")
+    val =ask_int(": ", valid={1,2,3})
+    if val == 1:
+        print("The officer screams: He's reaching")
+        print("Show me your hands")
+        print("1) deescalate\n 2)Attack")
+        val = ask_int(": ", valid={1,2})
+        if val == 1: 
+            print("The officers fires 2 shots")
+            player_health = 0
+            return player_health, money, False
+        else:
+            dead = attack_officer_of_the_law(inventory)
+            return player_health, money, True
+    elif val == 2:
+        print("You comply with the officer, he searches you and finds nothing, he lets you go but takes 20 coins as a fine")
+        money -= 20
+        return player_health, money, True
+
+def meth_head_encounter(inventory, player_health, money):
+    clear()
+    print("You continue to walk through the town, on your way you spot a meth head, he looks at you with a crazy look in his eyes")
+    print("Meth head: 'Hey you, you look like you have some money, can you spare some change?'")
+    print("1)Give him some money \n2)Ignore him \n3)Give him your healing powder\n4)Attack him")
+    val = ask_int(": ", valid={1,2,3,4})
+    if val == 1:
+        if money >= 10:
+            print("You give the meth head some money, he looks at you with a grateful look and walks away")
+            money -= 10
+        else:
+            print("You don't have enough money to give.")
+        pause()
+        return player_health, money, True
+    elif val == 2:
+        print("You ignore the meth head, he gets angry and punches you, you take 16 damage")
+        player_health -= 16
+        pause()
+        if player_health <= 0:
+            return player_health, money, False
+        val = ask_int("1) Attack\n2) Flee\n: ", valid={1,2})
+        if val == 1:
+            dead = attack_methhead(inventory)
+            return player_health, money, True
+        else:
+            print("you try to flee, but the methhead is faster than you, he catches up to you and attacks you, you now have sepsis and take 84 damage")
+            player_health -= 84
+            return player_health, money, player_health > 0
+    elif val == 3:
+        if inventory.get("healing powder", 0) > 0:
+            inventory["healing powder"] -= 1
+            print("You give the meth head your healing powder, he looks at you with a grateful look, he puts a handful on his hand and snorts it, he looks at you with saliva bubbling from his mouth, he drops to the ground and starts to seize.")
+            val = ask_int("1) End his suffering\n2) Leave him be\n: ", valid={1,2})
+            if val == 1:
+                attack_methhead(inventory)
+                return player_health, money, True
+            else:
+                print("you decide to leave the methhead be, he continues to seize on the ground, after a while he stops seizing and dies on his own")
+                return player_health, money, True
+        else:
+            print("You don't have healing powder to give.")
+            pause()
+            return player_health, money, True
+    elif val == 4:
+        print("you attack the methhead, he looks at you with a crazy look in his eyes, he attacks you back, you take 16 damage")
+        player_health -= 16
+        pause()
+        if player_health <= 0:
+            return player_health, money, False
+        val = ask_int("1) Attack\n2) Flee\n: ", valid={1,2})
+        if val == 1:
+            attack_methhead(inventory)
+            return player_health, money, True
+        else:
+            print("you try to flee, but the methhead is faster than you, he catches up to you and attacks you, you now have sepsis and take 84 damage")
+            player_health -= 84
+            return player_health, money, player_health > 0
+
+def show_status(inventory, player_health, money, name):
+    print("\n--- STATUS ---")
+    print(f"Name: {name}")
+    print(f"Health: {player_health}")
+    print(f"Money: {money}")
+    inv = ", ".join(f"{k}×{v}" for k,v in inventory.items() if v > 0)
+    print(f"Inventory: {inv if inv else 'empty'}")
+    print("----------------\n")
+
+def main():
+    clear()
+    money = 100
+    player_health = 100
+    inventory = {}
+
+    name = choose_name()
+    clear()
+    choose_item(inventory)
+    money = store(inventory, money)
+    show_status(inventory, player_health, money, name)
+    player_health, money, alive = meth_head_encounter(inventory, player_health, money)
+    show_status(inventory, player_health, money, name)
+    if not alive or player_health <= 0:
+        print("You have died, better luck next time!")
+    else:
+        print("You survived the encounter. The adventure continues...")
+
+if __name__ == "__main__":
+    main()
