@@ -3,7 +3,7 @@ worst_slurs = [
     "nigga",
     "reggin",
     "nigg3r",
-    "",
+    " ",
     "",
     "",                
     "coon",

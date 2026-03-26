@@ -1,10 +1,12 @@
 import os
 import time
 from listOfSlurs import worst_slurs
+meathead_health = 100
+officer_health = 100
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
-def pause(t=1.3):
+def pause(t=2):
     time.sleep(t)
 
 def ask_int(prompt, valid=None):
@@ -128,75 +130,85 @@ def attack_officer(inventory):
         return False
 
     if weapon == "gun":
-        if inventory.get("ammo", 0) > 0:
-            print("you shoot the officer, [describe death]")
-            inventory["ammo"] -= 1
+            print("you reach for your gun but the officer is faster")
+            inventory["ammo"] -= 0
+            player_health -= 100
             return True
-        else:
-            print("You have no ammo left!")
-            return False
     elif weapon == "sword":
-        print("you attack the officer with your sword, [describe death]")
+        print("you reach for your gun but the officer is faster")
         return True
     elif weapon == "frying pan":
-        print("you attack the officer with your frying pan, [describe death]")
+        print("you reach for your gun but the officer is faster")
         return True
     elif weapon == "baby knife":
-        print("you attack the officer with your baby knife, [describe death]")
+        print("you reach for your gun but the officer is faster")
         return True
     return False
 
 
 def officer_encounter(inventory, player_health, money):
+    global officer_health
+    officer_health = 100
     clear()
     # --- Introduction ---
-    print("you walk past a hut with a sign that says plolice. An officer jumps out and ")
-    print("OFFICER_NAME: '[Opening line]'")
+    print("you walk past a hut with a sign that says plolice. An officer jumps out and screams at you. ")
+    print("Put your hands up")
 
-    print("1) Attack\n2) Talk\n3) Bribe")
-    val = ask_int(": ", valid={1, 2, 3})
+    print("1) Attack\n2) Run\n3) Bribe\n4) Comply")
+    val = ask_int(": ", valid={1, 2, 3, 4})
 
     if val == 1:
-        # --- Attack path ---
-        print("")
+
+        print("you try to attack the officer")
+        print("he shoots you")
         officer_health -= 20
-        player_health -= 0  # set damage value
+        player_health -= 100
         pause()
         if player_health <= 0:
             return player_health, money, False
-        val = ask_int("1) Keep attacking\n2) Try to bribe\n: ", valid={1, 2})
+        val = ask_int("1) Try to bribe\n 2) Run\n : ", valid={1, 2})
         if val == 1:
-            dead = attack_officer(inventory)
-            return player_health, money, True
-        else:
             print("[The officer takes the money and punches you in the face, you take 20 damage, he walks away")
             player_health = - 20
             return player_health, money, False
-
-    elif val == 2:
-        # --- Talk path ---
-        print("OFFICER_NAME: '[Dialogue response]'")
-        print("1) [Dialogue option A]\n2) [Dialogue option B]")
-        val = ask_int(": ", valid={1, 2})
-        if val == 1:
-            print("[Outcome A — e.g. OFFICER helps, gives item, leaves peacefully]")
-            # money += 0 / inventory["item"] += 1  ← optional reward
-        else:
-            print("[Outcome B — e.g. OFFICER gets angry, penalise player]")
-            money -= 0  # set penalty
-        pause()
-        return player_health, money, True
-
-    elif val == 3:
-        # --- Optional third option (e.g. Bribe) ---
-        if money >= 0:  # set bribe cost
-            print("[Describe bribe outcome]")
-            money -= 0  # set cost
         else:
             print("You don't have enough money.")
+            print("the officer punches you hard and you drop to the ground, everything goes black")
+        pause()
+        return player_health, money, False
+            
+
+    elif val == 2:
+        print("you try to run but the officer tazes you, you take 30 damage") 
+        player_health -= 30
+        pause()
+        if player_health <= 0:
+            return player_health, money, False
+        return player_health, money, False
+    elif val == 3:
+        if money >= 50:
+            print("you try to bribe the officer, he takes the money and punches you in the face, you take 20 damage, he walks away")
+            money -= 50
+            player_health -= 20
+            pause()
+            if player_health <= 0:
+                return player_health, money, False
+            return player_health, money, True
+        else:
+            print("You don't have enough money.")
+            print("the officer punches you hard and you drop to the ground, everything goes black")
+            pause()
+            return player_health, money, False
+    elif val == 4:
+        print("you comply with the officer, he handcuffs you and takes you to jail, you spend the night in jail and get out the next day, you lose 20 coins for bail")
+        money -= 20
         pause()
         return player_health, money, True
+    
 def meth_head_encounter(inventory, player_health, money):
+    global methhead_health
+    methhead_health = 100
+
     clear()
     print("You continue to walk through the town, on your way you spot a meth head, he looks at you with a crazy look in his eyes")
     print("Meth head: 'Hey you, you look like you have some money, can you spare some change?'")
@@ -260,7 +272,7 @@ def show_status(inventory, player_health, money, name):
     print(f"Name: {name}")
     print(f"Health: {player_health}")
     print(f"Money: {money}")
-    inv = ", ".join(f"{k}×{v}" for k,v in inventory.items() if v > 0)
+    inv = ", ".join(f"{k} X{v}" for k,v in inventory.items() if v > 0)
     print(f"Inventory: {inv if inv else 'empty'}")
     print("----------------\n")
 
@@ -281,6 +293,7 @@ def main():
         print("You have died, better luck next time!")
     else:
         print("You survived the encounter. The adventure continues...")
+        pause()
         player_health, money, alive = officer_encounter(inventory, player_health, money)
         show_status(inventory, player_health, money, name)
         if not alive or player_health <= 0:
