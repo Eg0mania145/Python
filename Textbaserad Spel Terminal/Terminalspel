@@ -29,7 +29,7 @@ def ask_nonempty(prompt):
 def choose_name():
     print("You walk in to a small town, directly after the gate a longbearded old man dressed in long robes\n")
     print("Hey there!")
-    name = ask_nonempty("What is your name fellow traveler?\n : ")
+    name = ask_nonempty("What is your name fellow traveler?\n : ").lower()
     if name in worst_slurs:
         import os
         print("get forked nerd")
@@ -117,58 +117,85 @@ def attack_methhead(inventory):
         print("you attack the methhead with your baby knife, you stab him in the throat, he chokes on his own blood and sags to the ground.")
         return True
     return False
-def attack_officer_of_the_law(inventory):
+def attack_officer(inventory):
     weapon_priority = ["gun", "sword", "frying pan", "baby knife"]
     for w in weapon_priority:
         if inventory.get(w, 0) > 0:
             weapon = w
             break
-    else:        print("You have no weapon to attack with!")
-    return False
+    else:
+        print("You have no weapon to attack with!")
+        return False
+
     if weapon == "gun":
         if inventory.get("ammo", 0) > 0:
-            print("you shoot the officer of the law in his head, he dies instantly")
+            print("you shoot the officer, [describe death]")
             inventory["ammo"] -= 1
             return True
         else:
             print("You have no ammo left!")
             return False
     elif weapon == "sword":
-        print("you attack the officer of the law with your sword, you chop his left arm off, he takes 20 damage but is still alive, he looks at you with rage in his eyes and attacks you back, you take 20 damage")
-        player_health -= 20
-
+        print("you attack the officer with your sword, [describe death]")
         return True
     elif weapon == "frying pan":
-        print("you attack the officer of the law with your frying pan, you hit him in the head, his skull caves in and he dies instantly")
+        print("you attack the officer with your frying pan, [describe death]")
         return True
     elif weapon == "baby knife":
-        print("you attack the officer of the law with your baby knife, you stab him in the throat, he chokes on his own blood and sags to the ground.")
+        print("you attack the officer with your baby knife, [describe death]")
         return True
     return False
-    print("")
-def officer_of_the_law_encounter(inventory, player_health, money):
+
+
+def officer_encounter(inventory, player_health, money):
     clear()
-    print("you walk past a small hut with a sign that says police.")
-    print("An officer of the law jumps out of the hut and screams: !show me your hands!")
-    print("1)Attack\n 2)Comply\n 3)Bribe")
-    val =ask_int(": ", valid={1,2,3})
+    # --- Introduction ---
+    print("you walk past a hut with a sign that says plolice. An officer jumps out and ")
+    print("OFFICER_NAME: '[Opening line]'")
+
+    print("1) Attack\n2) Talk\n3) Bribe")
+    val = ask_int(": ", valid={1, 2, 3})
+
     if val == 1:
-        print("The officer screams: He's reaching")
-        print("Show me your hands")
-        print("1) deescalate\n 2)Attack")
-        val = ask_int(": ", valid={1,2})
-        if val == 1: 
-            print("The officers fires 2 shots")
-            player_health = 0
+        # --- Attack path ---
+        print("")
+        officer_health -= 20
+        player_health -= 0  # set damage value
+        pause()
+        if player_health <= 0:
             return player_health, money, False
-        else:
-            dead = attack_officer_of_the_law(inventory)
+        val = ask_int("1) Keep attacking\n2) Try to bribe\n: ", valid={1, 2})
+        if val == 1:
+            dead = attack_officer(inventory)
             return player_health, money, True
+        else:
+            print("[The officer takes the money and punches you in the face, you take 20 damage, he walks away")
+            player_health = - 20
+            return player_health, money, False
+
     elif val == 2:
-        print("You comply with the officer, he searches you and finds nothing, he lets you go but takes 20 coins as a fine")
-        money -= 20
+        # --- Talk path ---
+        print("OFFICER_NAME: '[Dialogue response]'")
+        print("1) [Dialogue option A]\n2) [Dialogue option B]")
+        val = ask_int(": ", valid={1, 2})
+        if val == 1:
+            print("[Outcome A — e.g. OFFICER helps, gives item, leaves peacefully]")
+            # money += 0 / inventory["item"] += 1  ← optional reward
+        else:
+            print("[Outcome B — e.g. OFFICER gets angry, penalise player]")
+            money -= 0  # set penalty
+        pause()
         return player_health, money, True
 
+    elif val == 3:
+        # --- Optional third option (e.g. Bribe) ---
+        if money >= 0:  # set bribe cost
+            print("[Describe bribe outcome]")
+            money -= 0  # set cost
+        else:
+            print("You don't have enough money.")
+        pause()
+        return player_health, money, True
 def meth_head_encounter(inventory, player_health, money):
     clear()
     print("You continue to walk through the town, on your way you spot a meth head, he looks at you with a crazy look in his eyes")
@@ -213,8 +240,9 @@ def meth_head_encounter(inventory, player_health, money):
             pause()
             return player_health, money, True
     elif val == 4:
-        print("you attack the methhead, he looks at you with a crazy look in his eyes, he attacks you back, you take 16 damage")
-        player_health -= 16
+        print("you attack the methhead, he takes 40 damage , he attacks you back, you take 20 damage")
+        player_health -= 20
+        methhead_health -=40
         pause()
         if player_health <= 0:
             return player_health, money, False
@@ -224,7 +252,7 @@ def meth_head_encounter(inventory, player_health, money):
             return player_health, money, True
         else:
             print("you try to flee, but the methhead is faster than you, he catches up to you and attacks you, you now have sepsis and take 84 damage")
-            player_health -= 84
+            player_health -= 80
             return player_health, money, player_health > 0
 
 def show_status(inventory, player_health, money, name):
@@ -241,7 +269,7 @@ def main():
     money = 100
     player_health = 100
     inventory = {}
-
+    officer_health = 50
     name = choose_name()
     clear()
     choose_item(inventory)
@@ -253,6 +281,12 @@ def main():
         print("You have died, better luck next time!")
     else:
         print("You survived the encounter. The adventure continues...")
+        player_health, money, alive = officer_encounter(inventory, player_health, money)
+        show_status(inventory, player_health, money, name)
+        if not alive or player_health <= 0:
+            print("You have died, better luck next time!")
+        else:
+            print("You survived the encounter. The adventure continues...")
 
 if __name__ == "__main__":
     main()
